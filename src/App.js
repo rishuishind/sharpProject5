@@ -1,14 +1,17 @@
-// import { Switch, Route } from "react-router-dom";
-// import HomePage from "./pages/HomePage";
-// import { Router } from "react-router-dom/cjs/react-router-dom.min";
-import Navbar from "./components/Navbar";
-import Authentication from "./components/Authentication";
+import { Switch, Route } from "react-router-dom";
+import DummyLogin from './pages/DummyLogin'
+import HomePage from "./pages/HomePage";
+import { Router } from "react-router-dom/cjs/react-router-dom.min";
 
 function App() {
   return (
     <>
-      <Navbar />
-      <Authentication />
+      <Route exact path="/">
+        <HomePage />
+      </Route>
+      <Route path="/login">
+        <DummyLogin />
+      </Route>
     </>
   );
 }

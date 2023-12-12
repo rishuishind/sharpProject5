@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react'
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
 const Authentication = () => {
 
@@ -9,6 +10,8 @@ const Authentication = () => {
     const emailRef = useRef();
     const passwordRef = useRef();
     const confirmPasswordRef = useRef();
+
+    const history = useHistory();
 
 
     const handleSubmit = (e) => {
@@ -44,6 +47,7 @@ const Authentication = () => {
             }
         }).then(data => {
             console.log(data);
+            history.replace('/login')
         }).catch(err => {
             alert(err.message);
         })
