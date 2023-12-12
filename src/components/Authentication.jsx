@@ -47,6 +47,7 @@ const Authentication = () => {
             }
         }).then(data => {
             console.log(data);
+            localStorage.setItem('token', data.idToken);
             history.replace('/login')
         }).catch(err => {
             alert(err.message);

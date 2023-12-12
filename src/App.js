@@ -1,7 +1,7 @@
-import { Switch, Route } from "react-router-dom";
+import { Route } from "react-router-dom";
 import DummyLogin from './pages/DummyLogin'
 import HomePage from "./pages/HomePage";
-import { Router } from "react-router-dom/cjs/react-router-dom.min";
+import UpdateProfile from "./pages/UpdateProfile";
 
 function App() {
   return (
@@ -11,6 +11,9 @@ function App() {
       </Route>
       <Route path="/login">
         <DummyLogin />
+      </Route>
+      <Route path='/updateProfile'>
+        <UpdateProfile />
       </Route>
     </>
   );
