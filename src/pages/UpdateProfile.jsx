@@ -1,9 +1,36 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 
 const UpdateProfile = () => {
 
     const nameRef = useRef();
     const urlRef = useRef();
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        fetch('https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyD8ycB6q6pys2MMvD6gP4F308TdRu3RshI', {
+            method: 'POST',
+            body: JSON.stringify({
+                idToken: token
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(res => {
+            if (res.ok) {
+                return res.json();
+            } else {
+                return res.json().then(data => {
+                    let errorMessage = 'Authentication Failed';
+                    throw new Error(errorMessage);
+                })
+            }
+        }).then(data => {
+            nameRef.current.value = data.users[0].displayName;
+            urlRef.current.value = data.users[0].email;
+        }).catch(err => {
+            alert(err);
+        })
+    }, [])
 
     const handleSubmit = (e) => {
         e.preventDefault();
