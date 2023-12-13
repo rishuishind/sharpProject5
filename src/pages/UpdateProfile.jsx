@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react'
+import Navbar from '../components/Navbar';
 
 const UpdateProfile = () => {
 
@@ -64,25 +65,28 @@ const UpdateProfile = () => {
     }
 
     return (
-        <div className='flex justify-center items-center h-screen'>
-            <div>
-                <h1 className=' font-semibold text-lg'>Contact Details</h1>
-                <form onSubmit={handleSubmit}>
-                    <div className='flex'>
-                        <div>
-                            <label htmlFor="Name">Full Name:</label>
-                            <input ref={nameRef} className=' bg-slate-200 rounded-md p-1 m-2' type="text" />
+        <>
+            <Navbar />
+            <div className='flex justify-center items-center h-screen'>
+                <div>
+                    <h1 className=' font-semibold text-lg'>Contact Details</h1>
+                    <form onSubmit={handleSubmit}>
+                        <div className='flex'>
+                            <div>
+                                <label htmlFor="Name">Full Name:</label>
+                                <input ref={nameRef} className=' bg-slate-200 rounded-md p-1 m-2' type="text" />
+                            </div>
+                            <div>
+                                <label htmlFor="url">Profile Photo URL:</label>
+                                <input ref={urlRef} className=' bg-slate-200 rounded-md p-1 m-2' type="text" />
+                            </div>
                         </div>
-                        <div>
-                            <label htmlFor="url">Profile Photo URL:</label>
-                            <input ref={urlRef} className=' bg-slate-200 rounded-md p-1 m-2' type="text" />
-                        </div>
-                    </div>
-                    <button type='submit' className=' bg-red-700 p-2 text-white rounded-lg'>Update</button>
-                </form>
-            </div>
+                        <button type='submit' className=' bg-red-700 p-2 text-white rounded-lg'>Update</button>
+                    </form>
+                </div>
 
-        </div>
+            </div>
+        </>
     )
 }
 
