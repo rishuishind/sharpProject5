@@ -54,6 +54,34 @@ const Authentication = () => {
         })
     }
 
+    const handleForget = () => {
+        fetch('https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyD8ycB6q6pys2MMvD6gP4F308TdRu3RshI',
+            {
+                method: 'POST',
+                body: JSON.stringify({
+                    requestType: 'PASSWORD_RESET',
+                    email: emailRef.current.value
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(res => {
+                if (res.ok) {
+                    return res.json();
+                } else {
+                    return res.json().then(data => {
+                        let errorMessage = 'Authentication failed';
+                        throw new Error(errorMessage);
+                    })
+                }
+            }).then(data => {
+                console.log('this is forget data ', data);
+                alert('Reset link sent succesfully, check your email');
+            }).catch(err => {
+                alert(err);
+            })
+    }
+
     return (
         <div className=' flex-col p-12 rounded-md border absolute border-black top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2'>
             <div>
@@ -70,8 +98,9 @@ const Authentication = () => {
                     {!isLogin && <div>
                         <input ref={confirmPasswordRef} className='border p-1.5 m-1' type="password" placeholder='confirm password' />
                     </div>}
+                    {isLogin && <h1 onClick={handleForget} className=' text-red-600 cursor-pointer'>Forget Password ?</h1>}
                     <div>
-                        <button type='submit' className='p-2 bg-black text-white rounded-sm mt-3'>{isLogin ? 'Login' : 'SignUp'}</button>
+                        <button type='submit' className='p-2 bg-black text-white rounded-md mt-3'>{isLogin ? 'Login' : 'SignUp'}</button>
                     </div>
                 </form>
                 <button onClick={() => setIsLogin(!isLogin)} className=' bg-gray-500 px-3 rounded mt-3 text-white'>{isLogin ? 'Dont have an account?' : 'Already have an account'}</button>
