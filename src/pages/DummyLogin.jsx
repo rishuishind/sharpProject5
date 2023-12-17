@@ -1,7 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router-dom/cjs/react-router-dom';
-import Navbar from '../components/Navbar';
-
+import { Link } from 'react-router-dom';
 const DummyLogin = () => {
 
     const handleVerifyEmail = () => {
@@ -32,15 +30,14 @@ const DummyLogin = () => {
     }
 
     return (
-        <>
-            <Navbar />
-            <h1>This is a dummy login page</h1>
+        <div className='ml-4'>
+            <h1 className='p-10'>This is a dummy login page</h1>
             <Link to='/updateProfile'>
                 <h1 className=' text-blue-800'>Your Profile is incomplete!! Complete now</h1>
             </Link>
 
             <button onClick={handleVerifyEmail} className=' bg-red-500 text-white p-2 mt-5 rounded-lg'>Verify Email</button>
-        </>
+        </div>
     )
 }
 

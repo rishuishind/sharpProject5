@@ -1,9 +1,9 @@
-import React, { useRef, useState } from 'react'
-import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
+import React, { useRef, useState, useContext } from 'react';
+import AuthContext from '../store/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Authentication = () => {
-
-    const [isLogin, setIsLogin] = useState(true);
+    const ctx = useContext(AuthContext);
     const apiKEY = 'AIzaSyD8ycB6q6pys2MMvD6gP4F308TdRu3RshI';
     const [api, setAPI] = useState('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=')
 
@@ -11,12 +11,12 @@ const Authentication = () => {
     const passwordRef = useRef();
     const confirmPasswordRef = useRef();
 
-    const history = useHistory();
+    const history = useNavigate()
 
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (isLogin) {
+        if (ctx.isLogin) {
             setAPI(api + apiKEY);
         } else {
             if (passwordRef.current.value === confirmPasswordRef.current.value) {
@@ -48,13 +48,17 @@ const Authentication = () => {
         }).then(data => {
             console.log(data);
             localStorage.setItem('token', data.idToken);
-            history.replace('/login')
+            history('/login')
         }).catch(err => {
             alert(err.message);
         })
     }
 
     const handleForget = () => {
+        if (emailRef.current.value.length < 1) {
+            alert('Please enter email');
+            return;
+        }
         fetch('https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyD8ycB6q6pys2MMvD6gP4F308TdRu3RshI',
             {
                 method: 'POST',
@@ -85,7 +89,7 @@ const Authentication = () => {
     return (
         <div className=' flex-col p-12 rounded-md border absolute border-black top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2'>
             <div>
-                <h1 className=' text-lg font-semibold'>{isLogin ? 'Login Page:' : 'SignUp Page:'}</h1>
+                <h1 className=' text-lg font-semibold'>{ctx.isLogin ? 'Login Page:' : 'SignUp Page:'}</h1>
             </div>
             <div>
                 <form onSubmit={handleSubmit}>
@@ -95,15 +99,15 @@ const Authentication = () => {
                     <div>
                         <input ref={passwordRef} className='border p-1.5 m-1' type="password" placeholder='password' />
                     </div>
-                    {!isLogin && <div>
+                    {!ctx.isLogin && <div>
                         <input ref={confirmPasswordRef} className='border p-1.5 m-1' type="password" placeholder='confirm password' />
                     </div>}
-                    {isLogin && <h1 onClick={handleForget} className=' text-red-600 cursor-pointer'>Forget Password ?</h1>}
+                    {ctx.isLogin && <h1 onClick={handleForget} className=' text-red-600 cursor-pointer'>Forget Password ?</h1>}
                     <div>
-                        <button type='submit' className='p-2 bg-black text-white rounded-md mt-3'>{isLogin ? 'Login' : 'SignUp'}</button>
+                        <button type='submit' className='p-2 bg-black text-white rounded-md mt-3'>{ctx.isLogin ? 'Login' : 'SignUp'}</button>
                     </div>
                 </form>
-                <button onClick={() => setIsLogin(!isLogin)} className=' bg-gray-500 px-3 rounded mt-3 text-white'>{isLogin ? 'Dont have an account?' : 'Already have an account'}</button>
+                <button onClick={ctx.changeLogin} className=' bg-gray-500 px-3 rounded mt-3 text-white'>{ctx.isLogin ? 'Dont have an account?' : 'Already have an account'}</button>
             </div>
         </div>
     )

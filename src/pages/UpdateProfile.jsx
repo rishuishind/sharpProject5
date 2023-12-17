@@ -1,5 +1,4 @@
-import React, { useEffect, useRef } from 'react'
-import Navbar from '../components/Navbar';
+import React, { useEffect, useRef } from 'react';
 
 const UpdateProfile = () => {
 
@@ -58,7 +57,7 @@ const UpdateProfile = () => {
                 })
             }
         }).then(data => {
-            console.log(data);
+            alert('updated the data')
         }).catch(err => {
             alert(err.message);
         })
@@ -66,7 +65,6 @@ const UpdateProfile = () => {
 
     return (
         <>
-            <Navbar />
             <div className='flex justify-center items-center h-screen'>
                 <div>
                     <h1 className=' font-semibold text-lg'>Contact Details</h1>
