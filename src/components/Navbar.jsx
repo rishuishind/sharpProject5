@@ -10,7 +10,7 @@ const Navbar = () => {
     }
     return (
         <>
-            <nav className="fixed flex justify-between p-2 h-20 list-none bg-slate-800 text-slate-100 w-full">
+            <nav className="flex justify-between p-2 h-20 list-none bg-slate-800 text-slate-100 w-full">
                 <h1 className='font-bold text-2xl'>Expense Tracker</h1>
                 <div className='flex w-[90%] justify-evenly p-5'>
                     <li className='cursor-pointer'>Home</li>
