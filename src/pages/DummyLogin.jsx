@@ -1,15 +1,36 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 const DummyLogin = () => {
 
     const [list, setList] = useState([]);
-
 
     const priceRef = useRef();
     const desRef = useRef();
     const catRef = useRef();
 
+    useEffect(() => {
+        fetch('https://react-http-96a9c-default-rtdb.firebaseio.com/expenses.json')
+            .then(res => {
+                if (res.ok) {
+                    return res.json();
+                } else {
+                    let errorMessage = 'Authentication Failed'
+                    throw new Error(errorMessage);
+                }
+            }).then(data => {
+                if (data) {
+                    setList(Object.values(data))
+                }
+            }).catch(err => {
+                alert(err);
+            })
+    }, [])
+
     const handleFormSubmit = (e) => {
         e.preventDefault();
+        if (desRef.current.value.length < 1 || priceRef.current.value.length < 1) {
+            alert('enter valid input');
+            return;
+        }
         const obj = {
             Description: desRef.current.value,
             Amount: priceRef.current.value,
@@ -18,6 +39,28 @@ const DummyLogin = () => {
         setList((prev) => {
             return ([...prev, obj])
         })
+        fetch('https://react-http-96a9c-default-rtdb.firebaseio.com/expenses.json',
+            {
+                method: 'POST',
+                body: JSON.stringify({
+                    Description: desRef.current.value,
+                    Amount: priceRef.current.value,
+                    Cateogory: catRef.current.value
+                }),
+            }).then(res => {
+                if (res.ok) {
+                    return res.json();
+                } else {
+                    let errorMessage = 'Authentication Failed'
+                    throw new Error(errorMessage);
+                }
+            }).then(data => {
+                alert('Request Sent Successfully')
+                console.log(data);
+            }).catch(err => alert(err));
+        desRef.current.value = '';
+        catRef.current.value = '';
+        priceRef.current.value = '';
     }
 
     return (
@@ -47,14 +90,19 @@ const DummyLogin = () => {
             </form>
             <div className='absolute max-w-fit p-10'>
                 {list.map((item) => (
-                    <ul className='flex gap-3 ml-5 mb-3'>
-                        <span className=' font-semibold'>Description:</span>
-                        <li key={item.Description}>{item.Description}</li>
-                        <span className=' font-semibold'>Price:</span>
-                        <li key={item.Description}>{item.Amount}</li>
-                        <span className=' font-semibold'>Cateogory:</span>
-                        <li key={item.Description}>{item.Cateogory}</li>
-                    </ul>
+                    <div className='flex'>
+                        <ul key={item.Description} className='flex gap-3 ml-5 mb-3'>
+                            <span className=' font-semibold'>Description:</span>
+                            <li>{item.Description}</li>
+                            <span className=' font-semibold'>Price:</span>
+                            <li>{item.Amount}</li>
+                            <span className=' font-semibold'>Cateogory:</span>
+                            <li>{item.Cateogory}</li>
+                        </ul>
+                        <div>
+                            <button className='bg-red-600 ml-6 text-white rounded-md p-1'>delete expense</button>
+                        </div>
+                    </div>
                 ))}
             </div>
         </div>
