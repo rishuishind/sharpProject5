@@ -1,11 +1,15 @@
 import React from 'react'
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { loginActions } from '../store/AuthContext';
 
 const Navbar = () => {
     const token = localStorage.getItem('token');
+    const dispatch = useDispatch();
     const history = useNavigate();
     const handleLogout = () => {
         localStorage.removeItem('token');
+        dispatch(loginActions.setToken(''));
         history('/')
     }
     return (

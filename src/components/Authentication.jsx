@@ -1,9 +1,13 @@
-import React, { useRef, useState, useContext } from 'react';
-import AuthContext from '../store/AuthContext';
+import React, { useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { loginActions } from '../store/AuthContext';
 
 const Authentication = () => {
-    const ctx = useContext(AuthContext);
+    const loginCtx = useSelector(state => state.isLogin);
+    const dispatch = useDispatch();
+
+
     const apiKEY = 'AIzaSyD8ycB6q6pys2MMvD6gP4F308TdRu3RshI';
     const [api, setAPI] = useState('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=')
 
@@ -11,12 +15,16 @@ const Authentication = () => {
     const passwordRef = useRef();
     const confirmPasswordRef = useRef();
 
-    const history = useNavigate()
+    const history = useNavigate();
+
+    const handleLogin = () => {
+        dispatch(loginActions.changeLogin());
+    }
 
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (ctx.isLogin) {
+        if (loginCtx) {
             setAPI(api + apiKEY);
         } else {
             if (passwordRef.current.value === confirmPasswordRef.current.value) {
@@ -47,6 +55,7 @@ const Authentication = () => {
             }
         }).then(data => {
             console.log(data);
+            dispatch(loginActions.setToken(data.idToken));
             localStorage.setItem('token', data.idToken);
             history('/login')
         }).catch(err => {
@@ -79,7 +88,6 @@ const Authentication = () => {
                     })
                 }
             }).then(data => {
-                console.log('this is forget data ', data);
                 alert('Reset link sent succesfully, check your email');
             }).catch(err => {
                 alert(err);
@@ -89,7 +97,7 @@ const Authentication = () => {
     return (
         <div className=' flex-col p-12 rounded-md border absolute border-black top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2'>
             <div>
-                <h1 className=' text-lg font-semibold'>{ctx.isLogin ? 'Login Page:' : 'SignUp Page:'}</h1>
+                <h1 className=' text-lg font-semibold'>{loginCtx ? 'Login Page:' : 'SignUp Page:'}</h1>
             </div>
             <div>
                 <form onSubmit={handleSubmit}>
@@ -99,15 +107,15 @@ const Authentication = () => {
                     <div>
                         <input ref={passwordRef} className='border p-1.5 m-1' type="password" placeholder='password' />
                     </div>
-                    {!ctx.isLogin && <div>
+                    {!loginCtx && <div>
                         <input ref={confirmPasswordRef} className='border p-1.5 m-1' type="password" placeholder='confirm password' />
                     </div>}
-                    {ctx.isLogin && <h1 onClick={handleForget} className=' text-red-600 cursor-pointer'>Forget Password ?</h1>}
+                    {loginCtx && <h1 onClick={handleForget} className=' text-red-600 cursor-pointer'>Forget Password ?</h1>}
                     <div>
-                        <button type='submit' className='p-2 bg-black text-white rounded-md mt-3'>{ctx.isLogin ? 'Login' : 'SignUp'}</button>
+                        <button type='submit' className='p-2 bg-black text-white rounded-md mt-3'>{loginCtx ? 'Login' : 'SignUp'}</button>
                     </div>
                 </form>
-                <button onClick={ctx.changeLogin} className=' bg-gray-500 px-3 rounded mt-3 text-white'>{ctx.isLogin ? 'Dont have an account?' : 'Already have an account'}</button>
+                <button onClick={handleLogin} className=' bg-gray-500 px-3 rounded mt-3 text-white'>{loginCtx ? 'Dont have an account?' : 'Already have an account'}</button>
             </div>
         </div>
     )

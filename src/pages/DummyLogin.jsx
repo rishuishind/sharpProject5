@@ -18,7 +18,7 @@ const DummyLogin = () => {
                 }
             }).then(data => {
                 if (data) {
-                    setList(Object.values(data))
+                    setList(Object.values(data));
                 }
             }).catch(err => {
                 alert(err);
@@ -34,18 +34,16 @@ const DummyLogin = () => {
         const obj = {
             Description: desRef.current.value,
             Amount: priceRef.current.value,
-            Cateogory: catRef.current.value
+            Cateogory: catRef.current.value,
         }
-        setList((prev) => {
-            return ([...prev, obj])
-        })
+
         fetch('https://react-http-96a9c-default-rtdb.firebaseio.com/expenses.json',
             {
                 method: 'POST',
                 body: JSON.stringify({
                     Description: desRef.current.value,
                     Amount: priceRef.current.value,
-                    Cateogory: catRef.current.value
+                    Cateogory: catRef.current.value,
                 }),
             }).then(res => {
                 if (res.ok) {
@@ -55,12 +53,38 @@ const DummyLogin = () => {
                     throw new Error(errorMessage);
                 }
             }).then(data => {
-                alert('Request Sent Successfully')
-                console.log(data);
+                fetch(`https://react-http-96a9c-default-rtdb.firebaseio.com/expenses/${Object.values(data)}.json`, {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        ...obj,
+                        id: Object.values(data)
+                    })
+                }).then(res => {
+                    if (res.ok) {
+                        const obj2 = { ...obj, id: Object.values(data) };
+                        setList((prev) => {
+                            return ([...prev, obj2])
+                        })
+                        return res.json();
+                    }
+                }).catch(err => {
+                    alert(err)
+                })
             }).catch(err => alert(err));
         desRef.current.value = '';
         catRef.current.value = '';
         priceRef.current.value = '';
+    }
+
+    const handleDelete = (id) => {
+        const newList = list.filter((item) => item.id !== id.id)
+        console.log(newList);
+        setList(newList);
+        const url = `https://react-http-96a9c-default-rtdb.firebaseio.com/expenses/${id.id}.json`
+        fetch(`${url}`,
+            { method: 'DELETE' }
+        ).then(res => res.json())
+            .catch(err => alert(err))
     }
 
     return (
@@ -90,17 +114,19 @@ const DummyLogin = () => {
             </form>
             <div className='absolute max-w-fit p-10'>
                 {list.map((item) => (
-                    <div className='flex'>
-                        <ul key={item.Description} className='flex gap-3 ml-5 mb-3'>
-                            <span className=' font-semibold'>Description:</span>
-                            <li>{item.Description}</li>
-                            <span className=' font-semibold'>Price:</span>
-                            <li>{item.Amount}</li>
-                            <span className=' font-semibold'>Cateogory:</span>
-                            <li>{item.Cateogory}</li>
-                        </ul>
-                        <div>
-                            <button className='bg-red-600 ml-6 text-white rounded-md p-1'>delete expense</button>
+                    <div className='grid grid-cols-2'>
+                        <div className='col-span-1 p-4'>
+                            <ul key={item.Description} className='flex gap-3 ml-5 mb-3'>
+                                <span className=' font-semibold'>Description:</span>
+                                <li>{item.Description}</li>
+                                <span className=' font-semibold'>Price:</span>
+                                <li>{item.Amount}</li>
+                                <span className=' font-semibold'>Cateogory:</span>
+                                <li>{item.Cateogory}</li>
+                            </ul>
+                        </div>
+                        <div className=' col-span-1 p-4'>
+                            <button onClick={() => { handleDelete(item) }} className='bg-red-600 ml-6 text-white rounded-md p-1'>delete expense</button>
                         </div>
                     </div>
                 ))}

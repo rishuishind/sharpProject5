@@ -1,12 +1,19 @@
 import React, { useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginActions } from '../store/AuthContext';
 
 const UpdateProfile = () => {
 
     const nameRef = useRef();
     const urlRef = useRef();
 
+    const dispatch = useDispatch();
+
+    const token = useSelector(state => state.token);
     useEffect(() => {
-        const token = localStorage.getItem('token');
+        const local_token = localStorage.getItem('token');
+        dispatch(loginActions.setToken(local_token))
+        console.log('this is token', token, '------');
         fetch('https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyD8ycB6q6pys2MMvD6gP4F308TdRu3RshI', {
             method: 'POST',
             body: JSON.stringify({
@@ -28,13 +35,12 @@ const UpdateProfile = () => {
             nameRef.current.value = data.users[0].displayName;
             urlRef.current.value = data.users[0].email;
         }).catch(err => {
-            alert(err);
+            console.log(err);
         })
-    }, [])
+    }, [token])
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const token = localStorage.getItem('token');
         fetch('https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyD8ycB6q6pys2MMvD6gP4F308TdRu3RshI', {
             method: 'POST',
             body: JSON.stringify({
