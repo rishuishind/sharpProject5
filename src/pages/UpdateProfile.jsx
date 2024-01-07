@@ -9,7 +9,7 @@ const UpdateProfile = () => {
 
     const dispatch = useDispatch();
 
-    const token = useSelector(state => state.token);
+    const token = useSelector(state => state.login.token);
     useEffect(() => {
         const local_token = localStorage.getItem('token');
         dispatch(loginActions.setToken(local_token))
@@ -37,7 +37,7 @@ const UpdateProfile = () => {
         }).catch(err => {
             console.log(err);
         })
-    }, [token])
+    }, [token, dispatch])
 
     const handleSubmit = (e) => {
         e.preventDefault();

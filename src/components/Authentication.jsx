@@ -1,15 +1,16 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { loginActions } from '../store/AuthContext';
+import toast from 'react-hot-toast';
 
 const Authentication = () => {
-    const loginCtx = useSelector(state => state.isLogin);
+    const loginCtx = useSelector(state => state.login.isLogin);
     const dispatch = useDispatch();
 
 
-    const apiKEY = 'AIzaSyD8ycB6q6pys2MMvD6gP4F308TdRu3RshI';
-    const [api, setAPI] = useState('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=')
+    const loginApi = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyD8ycB6q6pys2MMvD6gP4F308TdRu3RshI';
+    const signUpApi = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyD8ycB6q6pys2MMvD6gP4F308TdRu3RshI'
 
     const emailRef = useRef();
     const passwordRef = useRef();
@@ -24,43 +25,42 @@ const Authentication = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        let api;
         if (loginCtx) {
-            setAPI(api + apiKEY);
+            api = loginApi;
         } else {
             if (passwordRef.current.value === confirmPasswordRef.current.value) {
-                setAPI('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' + apiKEY);
+                api = signUpApi
             } else {
                 alert('passwords do not match');
                 return;
             }
         }
-        fetch(api, {
-            method: 'POST',
-            body: JSON.stringify({
-                email: emailRef.current.value,
-                password: passwordRef.current.value,
-                returnSecureToken: true
-            }),
-            headers: {
-                'Content-Type': 'application/json'
+        const fetchingFun = async () => {
+            console.log('entered fetching');
+            console.log(api);
+            const response = await fetch(api, {
+                method: 'POST',
+                body: JSON.stringify({
+                    email: emailRef.current.value,
+                    password: passwordRef.current.value,
+                    returnSecureToken: true
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            if (!response.ok) {
+                throw new Error('Authentication Failed');
             }
-        }).then(res => {
-            if (res.ok) {
-                return res.json();
-            } else {
-                return res.json().then(data => {
-                    let errorMessage = 'Authentication Failed';
-                    throw new Error(errorMessage);
-                })
-            }
-        }).then(data => {
-            console.log(data);
+            const data = await response.json();
+            toast.success('logged In successfully')
             dispatch(loginActions.setToken(data.idToken));
             localStorage.setItem('token', data.idToken);
+            localStorage.setItem('email', emailRef.current.value)
             history('/login')
-        }).catch(err => {
-            alert(err.message);
-        })
+        }
+        fetchingFun().catch(err => alert(err));
     }
 
     const handleForget = () => {
@@ -95,7 +95,7 @@ const Authentication = () => {
     }
 
     return (
-        <div className=' flex-col p-12 rounded-md border absolute border-black top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2'>
+        <div className=' flex-col p-12 rounded-md border absolute border-black top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 bg-slate-100'>
             <div>
                 <h1 className=' text-lg font-semibold'>{loginCtx ? 'Login Page:' : 'SignUp Page:'}</h1>
             </div>
